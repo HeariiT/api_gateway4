@@ -1,0 +1,989 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: API Gateway
+  description: Ruby
+  contact:
+    name: B group
+    url: 'https://github.com/HeariiT/HeariiTProjectBE/tree/master/api_gateway'
+  license:
+    name: HeariiT - Software Architecture 2017-II
+host: '192.168.99.101:4000'
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+  - audio/mp3
+paths:
+  /sign_up:
+    post:
+      summary: Creates a new user
+      parameters:
+        - name: User
+          in: body
+          required: true
+          description: Creates a new user in the database
+          schema:
+            $ref: '#/definitions/UsersSignUp'
+      responses:
+        '200':
+          description: User created successfully.
+          schema:
+            $ref: '#/definitions/UserCreated'
+        '400':
+          description: Bad Request.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '422':
+          description: Unprocessable Entity.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /sign_in:
+    post:
+      summary: Creates a new session
+      parameters:
+        - name: auth
+          in: body
+          required: true
+          description: User logged in successfully
+          schema:
+            $ref: '#/definitions/Login'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/UserInf'
+        '400':
+          description: Bad Request.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '401':
+          description: Unathorized
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /refresh:
+    post:
+      summary: Refresh a given token
+      operationId: refresh
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token to revoke
+          required: true
+          type: string
+        - name: credentials
+          in: body
+          required: true
+          description: User's email
+          schema:
+            $ref: '#/definitions/Refresh'
+      responses:
+        '200':
+          description: new Token
+          schema:
+            $ref: '#/definitions/Token'
+        '401':
+          description: Could not verify!
+          schema:
+            $ref: '#/definitions/NotVerify'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /sign_out:
+    post:
+      summary: Creates a new RevokedToken row in session_db
+      operationId: logout
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/LogO'
+        '401':
+          description: Could not verify!
+          schema:
+            $ref: '#/definitions/NotVerify'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /my:
+    get:
+      summary: User profile
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/Users'
+        '404':
+          description: Not found.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    put:
+      summary: Edits the user
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: auth
+          in: body
+          required: true
+          description: Edits the user if he is logged in
+          schema:
+            $ref: '#/definitions/UsersEdit'
+      responses:
+        '200':
+          description: OK.
+          schema:
+            $ref: '#/definitions/Users'
+        '400':
+          description: Bad Request.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '422':
+          description: Unprocessable Entity.
+          schema:
+            $ref: '#/definitions/ParameterError'
+        '500':
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /email:
+    post:
+      summary: Return an user by email
+      parameters:
+        - name: email
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserEmail'
+      responses:
+        '200':
+          description: User
+          schema:
+            $ref: '#/definitions/Users'
+        '400':
+          description: Bad Request.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '422':
+          description: Unprocessable Entity.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /username:
+    post:
+      summary: Return an user by username
+      parameters:
+        - name: username
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserUsername'
+      responses:
+        '200':
+          description: User
+          schema:
+            $ref: '#/definitions/Users'
+        '400':
+          description: Bad Request.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '422':
+          description: Unprocessable Entity.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /validate:
+    post:
+      summary: Checks for token lifetime
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token to be validated
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Email
+          schema:
+            $ref: '#/definitions/UserEmail'
+        '401':
+          description: Token is invalid
+        '400':
+          description: Bad Request.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '422':
+          description: Unprocessable Entity.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error.
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /songs:
+    get:
+      summary: Returns a query of songs.
+      operationId: getQuerySongs
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: user
+          in: query
+          description: The songs of a user
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/SongList'
+        '400':
+          description: Bad Request (Invalid Params)
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    post:
+      summary: Creates a new song
+      operationId: postNewSong
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: song
+          in: body
+          required: true
+          description: Song Object
+          schema:
+            $ref: '#/definitions/SongUpload'
+      responses:
+        '201':
+          description: Created
+          schema:
+            type: object
+            required:
+              - status
+              - message
+              - request
+            properties:
+              status:
+                type: number
+              message:
+                type: string
+              request:
+                type: object
+        '400':
+          description: Bad Request (Invalid Params)
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  '/songs/{id}':
+    get:
+      summary: Returns a song with the given id
+      operationId: getSongById
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: The id of the song to be returned
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/Song'
+        '400':
+          description: Bad Request (Invalid Params)
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    put:
+      summary: Updates a song with the given id
+      operationId: updateSong
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: The id of the song to be updated
+          required: true
+          type: string
+        - name: song
+          in: body
+          required: true
+          description: Song Object
+          schema:
+            $ref: '#/definitions/SongPut'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request (Invalid Params)
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    delete:
+      summary: Deletes a song with the given id
+      operationId: deleteSong
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: The id of the song to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Ok
+          schema:
+            type: object
+            required:
+              - status
+              - message
+              - request
+            properties:
+              status:
+                type: number
+              message:
+                type: string
+              request:
+                type: object
+        '400':
+          description: Bad Request (Invalid Params)
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  '/download/{id}':
+    get:
+      summary: Returns the song as a stream of bytes
+      operationId: downloadSong
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: id
+          in: path
+          description: The id of the song to be downloaded
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'File sent, corresponding to song in mp3 format.'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /matches:
+    get:
+      summary: Returns all user matches
+      operationId: getMatches
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/MatchesList'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel2'
+  /match:
+    post:
+      summary: Creates a new match
+      operationId: createMatch
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: match
+          in: body
+          required: true
+          description: Match Object
+          schema:
+            $ref: '#/definitions/Match'
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/createdMatch'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorModel2'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    put:
+      summary: Updates an existing match
+      operationId: updateMatch
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: match
+          in: body
+          required: true
+          description: Match Object
+          schema:
+            $ref: '#/definitions/Match'
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/createdMatch'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorModel2'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  '/match/{f_id}':
+    delete:
+      summary: Deletes an existing match
+      operationId: deleteMatch
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: f_id
+          in: path
+          description: The id of the file
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/Completed'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorModel2'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /categories:
+    get:
+      summary: Returns all default categories
+      operationId: getDefaultcategories
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/CategoryList'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /user_categories:
+    get:
+      summary: Returns all user categories
+      operationId: getUserCategories
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/CategoryList'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    post:
+      summary: Create new category for given user
+      operationId: createUserCategory
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: category
+          in: body
+          description: Category object
+          required: true
+          schema:
+            $ref: '#/definitions/NewCategory'
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/Category'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    put:
+      summary: Updates an existing category for given user
+      operationId: updateUserCategory
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: category
+          in: body
+          description: Category object
+          required: true
+          schema:
+            $ref: '#/definitions/Category'
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/Category'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    delete:
+      summary: Deletes an existing category for given user
+      operationId: deleteUserCategory
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: category
+          in: body
+          description: Category object
+          required: true
+          schema:
+            $ref: '#/definitions/DropCategory'
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/Completed'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  '/category_for_file/{f_id}':
+    get:
+      summary: Returns the category for a given file
+      operationId: getFilesCategory
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: f_id
+          in: path
+          description: The id of the file
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Category'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  '/files_for_category/{c_id}':
+    get:
+      summary: Returns the files for a given category
+      operationId: getCategorysFiles
+      parameters:
+        - name: x-access-token
+          in: header
+          description: Token for revocation
+          required: true
+          type: string
+        - name: c_id
+          in: path
+          description: The id of the category
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/FileList'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+definitions:
+  Song:
+    type: object
+    required:
+      - id
+      - url
+      - title
+      - author
+      - album
+      - user
+    properties:
+      id:
+        type: string
+      url:
+        type: string
+      user:
+        type: string
+      title:
+        type: string
+      author:
+        type: string
+      album:
+        type: string
+  SongUpload:
+    type: object
+    required:
+      - title
+      - author
+      - album
+      - attachment
+    properties:
+      title:
+        type: string
+      author:
+        type: string
+      album:
+        type: string
+      attachment:
+        type: string
+        format: mp3
+  SongPut:
+    type: object
+    required:
+      - title
+      - author
+      - album
+    properties:
+      title:
+        type: string
+      author:
+        type: string
+      album:
+        type: string
+  SongList:
+    type: object
+    required:
+      - list
+    properties:
+      list:
+        type: array
+        items:
+          $ref: '#/definitions/Song'
+  ErrorModel:
+    type: object
+    required:
+      - status
+      - message
+      - request
+    properties:
+      status:
+        type: number
+      message:
+        type: string
+      description:
+        type: string
+      request:
+        type: object
+  UsersSignUp:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+  Users:
+    type: object
+    properties:
+      id:
+        type: integer
+      email:
+        type: string
+      username:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+  UsersEdit:
+    type: object
+    properties:
+      username:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+  UserInf:
+    type: object
+    properties:
+      id:
+        type: integer
+      email:
+        type: string
+      provider:
+        type: string
+      username:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      uid:
+        type: string
+  UserCreated:
+    type: object
+    properties:
+      status:
+        type: string
+      data:
+        type: object
+        properties:
+          id:
+            type: integer
+          email:
+            type: string
+          provider:
+            type: string
+          username:
+            type: string
+          first_name:
+            type: string
+          last_name:
+            type: string
+          uid:
+            type: string
+          created_at:
+            type: string
+          updated_at:
+            type: string
+  Login:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+  Refresh:
+    type: object
+    properties:
+      email:
+        type: string
+  ParameterError:
+    type: object
+    required:
+      - message
+      - code
+      - data
+      - errors
+    properties:
+      message:
+        type: string
+      code:
+        type: number
+      data:
+        $ref: '#/definitions/UsersSignUp'
+      errors:
+        type: object
+  LogO:
+    type: object
+    properties:
+      message:
+        type: string
+  NotVerify:
+    type: object
+    properties:
+      WWW-Authenticate:
+        type: string
+  Token:
+    type: object
+    properties:
+      token:
+        type: string
+  Match:
+    type: object
+    properties:
+      category_id:
+        type: string
+      file_id:
+        type: integer
+  createdMatch:
+    type: object
+    properties:
+      _id:
+        type: string
+      _rev:
+        type: string
+      category_id:
+        type: string
+      file_id:
+        type: string
+      user_id:
+        type: string
+  MatchesList:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Match'
+  Category:
+    type: object
+    properties:
+      category_name:
+        type: string
+      category_id:
+        type: string
+  NewCategory:
+    type: object
+    properties:
+      category_name:
+        type: string
+  CategoryList:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Category'
+  DropCategory:
+    type: object
+    properties:
+      category_id:
+        type: string
+  FileList:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Song'
+  Completed:
+    type: object
+    properties:
+      message:
+        type: string
+  ErrorModel2:
+    type: object
+    properties:
+      error:
+        type: string
+  UserEmail:
+    type: object
+    properties:
+      email:
+        type: string
+  UserUsername:
+    type: object
+    properties:
+      username:
+        type: string

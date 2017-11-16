@@ -1,0 +1,157 @@
+{
+	"variables": [],
+	"info": {
+		"name": "API Gateway",
+		"_postman_id": "ef51beda-14a1-aefc-906f-7d1340e7606c",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Registro",
+			"request": {
+				"url": "http://192.168.99.101:4000/sign_up",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"luergica@gmail.com\",\n  \"password\": \"12345678\",\n  \"username\": \"luergica\",\n  \"first_name\": \"Luis Ernesto\",\n  \"last_name\": \"Gil Castellanos\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Inicio de sesión",
+			"request": {
+				"url": "http://192.168.99.101:4000/sign_in",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"luergica@gmail.com\",\n\t\"password\": \"12345678\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Mi perfil",
+			"request": {
+				"url": "http://192.168.99.101:4000/my",
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1ZXJnaWNhQGdtYWlsLmNvbSIsImV4cCI6MTUwNzI4NzgzOX0.tKFmz95CKex-RqZSMkH2dqtH0YWCw818NfbZXwrmyZo",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Mis canciones",
+			"request": {
+				"url": {
+					"raw": "http://192.168.99.101:4000/songs?user=luergica",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"99",
+						"101"
+					],
+					"port": "4000",
+					"path": [
+						"songs"
+					],
+					"query": [
+						{
+							"key": "user",
+							"value": "luergica",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1ZXJnaWNhQGdtYWlsLmNvbSIsImV4cCI6MTUwNzI4OTQ5Nn0.-mBueKoEHWB6uR2U7usHEMZZePD_68FDzTlC2ryxKzA",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Crear canción",
+			"request": {
+				"url": "http://192.168.99.101:4000/songs",
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1ZXJnaWNhQGdtYWlsLmNvbSIsImV4cCI6MTUwNzI4ODMyOX0.T67cULPauEbui-jUisREW2B7vqKHLmmS_fof1-Rc37Y",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "Master of puppets",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "attachment",
+							"value": "",
+							"description": "",
+							"type": "file"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Canción por ID",
+			"request": {
+				"url": "http://192.168.99.101:4000/songs/1",
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1ZXJnaWNhQGdtYWlsLmNvbSIsImV4cCI6MTUwNzI4OTQ5Nn0.-mBueKoEHWB6uR2U7usHEMZZePD_68FDzTlC2ryxKzA",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
